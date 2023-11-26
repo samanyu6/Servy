@@ -5,9 +5,16 @@ defmodule Servy.Handler do
     |> rewrite
     |> log
     |> route
+    |> emojify
     |> trace
     |> format_response
   end
+
+  def emojify(%{status: 200} = request) do
+    %{request | resp_body: "🎉 #{request.resp_body} 🎉"}
+  end
+
+  def emojify(request), do: request
 
   def log(conv), do: IO.inspect conv
 
@@ -59,6 +66,16 @@ defmodule Servy.Handler do
   # error handling catch all route
   def route(request) do
     %{request | status: 404, resp_body: "no #{request.path} found"}
+  end
+
+  def format_response(%{resp_body: "🎉"} = request) do
+    """
+    HTTP/1.1 #{request.status} #{status_reason(request.status)}
+    Content-Type: text/html
+    Content-Length: #{byte_size(request.resp_body)}
+
+    #{request.resp_body}
+    """
   end
 
   def format_response(request) do
