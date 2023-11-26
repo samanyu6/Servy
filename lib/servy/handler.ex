@@ -25,6 +25,10 @@ defmodule Servy.Handler do
     %{request | path: "/wildthings"}
   end
 
+  def rewrite(%{method: "GET", path: "/bears?id=" <> id} = request) do
+    %{ request | path: "/bears/#{id}"}
+  end
+
   def rewrite(request), do: request
 
   def trace(%{status: 404, path: path} = request) do
@@ -44,8 +48,12 @@ defmodule Servy.Handler do
     %{request | status: 200, resp_body: "Teddy, Smokey, Paddington"}
   end
 
-  def route(%{method: "GET", path: "/bears" <> id} = request) do
+  def route(%{method: "GET", path: "/bears/" <> id} = request) do
     %{request | status: 200, resp_body: "Bear #{id}"}
+  end
+
+  def route(%{method: "DELETE", path: "/bears" <> _id} = request) do
+    %{ request | status: 403, resp_body: "Deleting bears is forbidden"}
   end
 
   # error handling catch all route
@@ -126,6 +134,30 @@ IO.puts response
 
 request = """
 GET /wildlife HTTP/1.1
+Host: example.com
+User-Agent: ExampleBrowser/1.0
+Accept: */*
+
+"""
+
+response = Servy.Handler.handle(request)
+
+IO.puts response
+
+request = """
+DELETE /bears/2 HTTP/1.1
+Host: example.com
+User-Agent: ExampleBrowser/1.0
+Accept: */*
+
+"""
+
+response = Servy.Handler.handle(request)
+
+IO.puts response
+
+request = """
+GET /bears?id=2 HTTP/1.1
 Host: example.com
 User-Agent: ExampleBrowser/1.0
 Accept: */*
