@@ -1,6 +1,9 @@
 defmodule Servy.Handler do
   def handle(request) do
-
+    request
+    |> parse
+    |> route
+    |> format_response
   end
 
   def parse(request) do

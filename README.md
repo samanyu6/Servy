@@ -1,6 +1,5 @@
 # Servy
 
-**TODO: Add description**
 
 ## Installation
 
