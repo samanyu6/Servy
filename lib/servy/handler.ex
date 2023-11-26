@@ -2,8 +2,10 @@ defmodule Servy.Handler do
   def handle(request) do
     request
     |> parse
+    |> rewrite
     |> log
     |> route
+    |> trace
     |> format_response
   end
 
@@ -19,26 +21,36 @@ defmodule Servy.Handler do
     %{method: method, path: path, resp_body: "", status: nil}
   end
 
-  def route(request) do
-    route(request, request.method, request.path)
+  def rewrite(%{path: "/wildlife"} = request) do
+    %{request | path: "/wildthings"}
   end
 
-  def route(request, "GET", "/wildthings") do
+  def rewrite(request), do: request
+
+  def trace(%{status: 404, path: path} = request) do
+    IO.inspect "Warning: Path #{path} is unmatched"
+    request
+  end
+
+  def trace(request), do: request
+
+  def route(%{method: "GET", path: "/wildthings"} = request) do
     # conv = Map.put(conv, :resp_body, "Bears)
-    %{request | status: 200, resp_body: "Bears, Lions, Tigers"}
+    %{ request | status: 200, resp_body: "Bears, Lions, Tigers" }
   end
 
-  def route(request, "GET", "/bears") do
+  def route(%{method: "GET", path: "/bears"} = request) do
     # conv = Map.put(conv, :resp_body, "Bears)
     %{request | status: 200, resp_body: "Teddy, Smokey, Paddington"}
   end
 
-  def route(request, "GET", "/bears" <> id) do
+  def route(%{method: "GET", path: "/bears" <> id} = request) do
+    %{request | status: 200, resp_body: "Bear #{id}"}
   end
 
   # error handling catch all route
-  def route(request, _method, path) do
-    %{request | status: 404, resp_body: "no #{path} found"}
+  def route(request) do
+    %{request | status: 404, resp_body: "no #{request.path} found"}
   end
 
   def format_response(request) do
@@ -90,6 +102,30 @@ IO.puts response
 
 request = """
 GET /bigfoot HTTP/1.1
+Host: example.com
+User-Agent: ExampleBrowser/1.0
+Accept: */*
+
+"""
+
+response = Servy.Handler.handle(request)
+
+IO.puts response
+
+request = """
+GET /bears/1 HTTP/1.1
+Host: example.com
+User-Agent: ExampleBrowser/1.0
+Accept: */*
+
+"""
+
+response = Servy.Handler.handle(request)
+
+IO.puts response
+
+request = """
+GET /wildlife HTTP/1.1
 Host: example.com
 User-Agent: ExampleBrowser/1.0
 Accept: */*
