@@ -1,3 +1,5 @@
+require Logger
+
 defmodule Servy.Handler do
   def handle(request) do
     request
@@ -16,7 +18,10 @@ defmodule Servy.Handler do
 
   def emojify(request), do: request
 
-  def log(conv), do: IO.inspect conv
+  def log(conv) do
+    Logger.info conv
+    conv
+  end
 
   def parse(request) do
     [method, path, _] =
@@ -38,16 +43,17 @@ defmodule Servy.Handler do
     rewrite_path_captures(request, captures)
   end
 
+  def rewrite(request), do: request
+
   def rewrite_path_captures(request, %{"thing" => thing, "id"=> id}) do
     %{ request | path: "/#{thing}/#{id}"}
   end
 
   def rewrite_path_captures(request, nil), do: request
 
-  def rewrite(request), do: request
 
   def trace(%{status: 404, path: path} = request) do
-    IO.inspect "Warning: Path #{path} is unmatched"
+    Logger.warning "Warning: Path #{path} is unmatched"
     request
   end
 
