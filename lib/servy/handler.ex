@@ -32,9 +32,17 @@ defmodule Servy.Handler do
     %{request | path: "/wildthings"}
   end
 
-  def rewrite(%{method: "GET", path: "/bears?id=" <> id} = request) do
-    %{ request | path: "/bears/#{id}"}
+  def rewrite(%{path: path} = request) do
+    regex = ~r{\/(?<thing>\w+)\?id=(?<id>\d+)}
+    captures = Regex.named_captures(regex, path)
+    rewrite_path_captures(request, captures)
   end
+
+  def rewrite_path_captures(request, %{"thing" => thing, "id"=> id}) do
+    %{ request | path: "/#{thing}/#{id}"}
+  end
+
+  def rewrite_path_captures(request, nil), do: request
 
   def rewrite(request), do: request
 
@@ -175,6 +183,18 @@ IO.puts response
 
 request = """
 GET /bears?id=2 HTTP/1.1
+Host: example.com
+User-Agent: ExampleBrowser/1.0
+Accept: */*
+
+"""
+
+response = Servy.Handler.handle(request)
+
+IO.puts response
+
+request = """
+GET /tigers?id=2 HTTP/1.1
 Host: example.com
 User-Agent: ExampleBrowser/1.0
 Accept: */*
