@@ -77,6 +77,26 @@ defmodule Servy.Handler do
     %{ request | status: 403, resp_body: "Deleting bears is forbidden"}
   end
 
+  def route(%{method: "GET", path: "/about"} = request) do
+     Path.expand("../../pages/", __DIR__)
+     |> Path.join("about.html")
+     |> File.read
+     |> handle_file(request)
+  end
+
+  def handle_file({:ok, content}, request) do
+    %{request | status: 200, resp_body: content}
+  end
+
+  def handle_file({:ok, :enoent}, request) do
+    %{request | status: 404, resp_body: "File not found"}
+  end
+
+  def handle_file({:error, reason}, request) do
+    %{request | status: 500, resp_body: "Error reading file #{reason}"}
+  end
+
+
   # error handling catch all route
   def route(request) do
     %{request | status: 404, resp_body: "no #{request.path} found"}
@@ -201,6 +221,18 @@ IO.puts response
 
 request = """
 GET /tigers?id=2 HTTP/1.1
+Host: example.com
+User-Agent: ExampleBrowser/1.0
+Accept: */*
+
+"""
+
+response = Servy.Handler.handle(request)
+
+IO.puts response
+
+request = """
+GET /about HTTP/1.1
 Host: example.com
 User-Agent: ExampleBrowser/1.0
 Accept: */*
