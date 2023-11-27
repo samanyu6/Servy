@@ -2,6 +2,7 @@ defmodule Servy.Handler do
   @moduledoc "Servy files"
   import Servy.Plugins, only: [rewrite: 1, log: 1, trace: 1]
   import Servy.Parser, only: [parse: 1]
+  import Servy.FileHandler, only: [get_page: 1, handle_file: 2]
  @doc "servy handler func"
   def handle(request) do
     request
@@ -19,9 +20,6 @@ defmodule Servy.Handler do
   end
 
   def emojify(request), do: request
-
-
-
 
   def route(%{method: "GET", path: "/wildthings"} = request) do
     # conv = Map.put(conv, :resp_body, "Bears)
@@ -57,24 +55,7 @@ defmodule Servy.Handler do
   end
 
 
-  def get_page(page) do
-    Path.expand("../../pages/", __DIR__)
-    |> Path.join(page)
-    |> File.read
-  end
 
-
-  def handle_file({:ok, content}, request) do
-    %{request | status: 200, resp_body: content}
-  end
-
-  def handle_file({:ok, :enoent}, request) do
-    %{request | status: 404, resp_body: "File not found"}
-  end
-
-  def handle_file({:error, reason}, request) do
-    %{request | status: 500, resp_body: "Error reading file #{reason}"}
-  end
 
 
   def format_response(%{resp_body: "🎉"} = request) do
