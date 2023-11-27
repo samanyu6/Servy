@@ -73,16 +73,32 @@ defmodule Servy.Handler do
     %{request | status: 200, resp_body: "Bear #{id}"}
   end
 
+  def route(%{method: "GET", path: "/pages/" <> name} = request) do
+    get_page("#{name}.html")
+     |> handle_file(request)
+  end
+
+  def route(%{method: "GET", path: "/bears/new"} = request) do
+    get_page("form.html")
+    |> handle_file(request)
+  end
+
   def route(%{method: "DELETE", path: "/bears" <> _id} = request) do
     %{ request | status: 403, resp_body: "Deleting bears is forbidden"}
   end
 
-  def route(%{method: "GET", path: "/about"} = request) do
-     Path.expand("../../pages/", __DIR__)
-     |> Path.join("about.html")
-     |> File.read
-     |> handle_file(request)
+  # error handling catch all route
+  def route(request) do
+    %{request | status: 404, resp_body: "no #{request.path} found"}
   end
+
+
+  def get_page(page) do
+    Path.expand("../../pages/", __DIR__)
+    |> Path.join(page)
+    |> File.read
+  end
+
 
   def handle_file({:ok, content}, request) do
     %{request | status: 200, resp_body: content}
@@ -96,11 +112,6 @@ defmodule Servy.Handler do
     %{request | status: 500, resp_body: "Error reading file #{reason}"}
   end
 
-
-  # error handling catch all route
-  def route(request) do
-    %{request | status: 404, resp_body: "no #{request.path} found"}
-  end
 
   def format_response(%{resp_body: "🎉"} = request) do
     """
@@ -232,7 +243,31 @@ response = Servy.Handler.handle(request)
 IO.puts response
 
 request = """
-GET /about HTTP/1.1
+GET /pages/about HTTP/1.1
+Host: example.com
+User-Agent: ExampleBrowser/1.0
+Accept: */*
+
+"""
+
+response = Servy.Handler.handle(request)
+
+IO.puts response
+
+request = """
+GET /pages/form HTTP/1.1
+Host: example.com
+User-Agent: ExampleBrowser/1.0
+Accept: */*
+
+"""
+
+response = Servy.Handler.handle(request)
+
+IO.puts response
+
+request = """
+GET /bears/new HTTP/1.1
 Host: example.com
 User-Agent: ExampleBrowser/1.0
 Accept: */*
