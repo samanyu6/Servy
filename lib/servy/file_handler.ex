@@ -1,6 +1,6 @@
 defmodule Servy.FileHandler do
 
-  @page_path  Path.expand("../../pages/", __DIR__)
+  @page_path  Path.expand("pages", File.cwd!)
 
   def get_page(page) do
     @page_path
