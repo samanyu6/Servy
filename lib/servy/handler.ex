@@ -1,8 +1,7 @@
-require Logger
-
 defmodule Servy.Handler do
   @moduledoc "Servy files"
-
+  import Servy.Plugins, only: [rewrite: 1, log: 1, trace: 1]
+  import Servy.Parser, only: [parse: 1]
  @doc "servy handler func"
   def handle(request) do
     request
@@ -21,46 +20,8 @@ defmodule Servy.Handler do
 
   def emojify(request), do: request
 
-  def log(conv) do
-    Logger.info conv
-    conv
-  end
-
-  def parse(request) do
-    [method, path, _] =
-      request
-      |> String.split("\n")
-      |> List.first()
-      |> String.split(" ")
-
-    %{method: method, path: path, resp_body: "", status: nil}
-  end
-
-  def rewrite(%{path: "/wildlife"} = request) do
-    %{request | path: "/wildthings"}
-  end
-
-  def rewrite(%{path: path} = request) do
-    regex = ~r{\/(?<thing>\w+)\?id=(?<id>\d+)}
-    captures = Regex.named_captures(regex, path)
-    rewrite_path_captures(request, captures)
-  end
-
-  def rewrite(request), do: request
-
-  def rewrite_path_captures(request, %{"thing" => thing, "id"=> id}) do
-    %{ request | path: "/#{thing}/#{id}"}
-  end
-
-  def rewrite_path_captures(request, nil), do: request
 
 
-  def trace(%{status: 404, path: path} = request) do
-    Logger.warning "Warning: Path #{path} is unmatched"
-    request
-  end
-
-  def trace(request), do: request
 
   def route(%{method: "GET", path: "/wildthings"} = request) do
     # conv = Map.put(conv, :resp_body, "Bears)
