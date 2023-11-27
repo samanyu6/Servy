@@ -1,6 +1,9 @@
 require Logger
 
 defmodule Servy.Handler do
+  @moduledoc "Servy files"
+
+ @doc "servy handler func"
   def handle(request) do
     request
     |> parse
