@@ -61,7 +61,7 @@ defmodule Servy.Handler do
 
   def format_response(%Conv{resp_body: "🎉"} = request) do
     """
-    HTTP/1.1 #{request.status} #{status_reason(request.status)}
+    HTTP/1.1 #{Conv.full_status(request)}
     Content-Type: text/html
     Content-Length: #{byte_size(request.resp_body)}
 
@@ -72,23 +72,12 @@ defmodule Servy.Handler do
   def format_response(%Conv{} = request) do
     # TODO: Use values in the map to create an HTTP response string:
     """
-    HTTP/1.1 #{request.status} #{status_reason(request.status)}
+    HTTP/1.1 #{Conv.full_status(request)}
     Content-Type: text/html
     Content-Length: #{String.length(request.resp_body)}
 
     #{request.resp_body}
     """
-  end
-
-  defp status_reason(code) do
-    %{
-      200 => "OK",
-      201 => "Created",
-      401 => "Unauthorized",
-      403 => "Forbidden",
-      404 => "Not Found",
-      500 => "Internal Server Error"
-    }[code]
   end
 end
 
