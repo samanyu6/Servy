@@ -51,8 +51,7 @@ defmodule Servy.Handler do
   end
 
   def route(%Conv{method: "POST", path: "/bears"} = request) do
-    params = %{"name" => "Baloo", "type"=>"Brown"}
-    %{request | status: 201, resp_body: "Created a #{params["type"]} bear"}
+    %{request | status: 201, resp_body: "Created a #{request.params["type"]} bear named #{request.params["name"]}"}
   end
 
   # error handling catch all route
