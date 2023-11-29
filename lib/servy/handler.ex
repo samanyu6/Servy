@@ -50,14 +50,15 @@ defmodule Servy.Handler do
     %{ request | status: 403, resp_body: "Deleting bears is forbidden"}
   end
 
+  def route(%Conv{method: "POST", path: "/bears"} = request) do
+    params = %{"name" => "Baloo", "type"=>"Brown"}
+    %{request | status: 201, resp_body: "Created a #{params["type"]} bear"}
+  end
+
   # error handling catch all route
   def route(%Conv{} = request) do
     %{request | status: 404, resp_body: "no #{request.path} found"}
   end
-
-
-
-
 
   def format_response(%Conv{resp_body: "🎉"} = request) do
     """
@@ -207,6 +208,21 @@ Host: example.com
 User-Agent: ExampleBrowser/1.0
 Accept: */*
 
+"""
+
+response = Servy.Handler.handle(request)
+
+IO.puts response
+
+request = """
+POST /bears HTTP/1.1
+Host: example.com
+User-Agent: ExampleBrowser/1.0
+Accept: */*
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 21
+
+name=Baloo&type=Brown
 """
 
 response = Servy.Handler.handle(request)
