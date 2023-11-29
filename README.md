@@ -1,5 +1,5 @@
 # Servy
-
+  - Atoms are not garbage collected oops
 
 ## Installation
 
