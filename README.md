@@ -1,6 +1,7 @@
 # Servy
   - Atoms are not garbage collected oops
-
+  - URI.decode_string converts params automatically into a map how convenient
+  - tail call optimisation -> makes recursion super efficient but what exactly is it?
 ## Installation
 
 If [available in Hex](https://hex.pm/docs/publish), the package can be installed
