@@ -3,6 +3,9 @@ defmodule Servy.Handler do
   import Servy.Plugins, only: [rewrite: 1, log: 1, trace: 1]
   import Servy.Parser, only: [parse: 1]
   import Servy.FileHandler, only: [get_page: 1, handle_file: 2]
+  import Servy.BearController
+
+  alias Servy.BearController
   alias Servy.Conv
  @doc "servy handler func"
   def handle(request) do
@@ -28,12 +31,12 @@ defmodule Servy.Handler do
   end
 
   def route(%Conv{method: "GET", path: "/bears"} = request) do
-    # conv = Map.put(conv, :resp_body, "Bears)
-    %{request | status: 200, resp_body: "Teddy, Smokey, Paddington"}
+    BearController.index(request)
   end
 
   def route(%Conv{method: "GET", path: "/bears/" <> id} = request) do
-    %{request | status: 200, resp_body: "Bear #{id}"}
+    params = Map.put(request.params, "id", id)
+    BearController.show(request, params)
   end
 
   def route(%Conv{method: "GET", path: "/pages/" <> name} = request) do
