@@ -1,6 +1,8 @@
 defmodule Servy.BearController do
+  alias Servy.Wildthings
   def index(request) do
-    %{request | status: 200, resp_body: "Teddy, Smokey, Paddington"}
+    bears = Wildthings.list_bears()
+    %{request | status: 200, resp_body: "<ul><li></li></ul>"}
   end
 
   def show(request, %{"id" => id}) do
