@@ -54,7 +54,7 @@ defmodule Servy.Handler do
   end
 
   def route(%Conv{method: "POST", path: "/bears"} = request) do
-    %{request | status: 201, resp_body: "Created a #{request.params["type"]} bear named #{request.params["name"]}"}
+    BearController.create(request, request.params)
   end
 
   # error handling catch all route
