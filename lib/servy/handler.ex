@@ -50,8 +50,9 @@ defmodule Servy.Handler do
      |> handle_file(request)
   end
 
-  def route(%Conv{method: "DELETE", path: "/bears" <> _id} = request) do
-    %{ request | status: 403, resp_body: "Deleting bears is forbidden"}
+  def route(%Conv{method: "DELETE", path: "/bears/" <> id} = request) do
+    params = Map.put(request.params, "id", id)
+    BearController.delete(request, params)
   end
 
   def route(%Conv{method: "POST", path: "/bears"} = request) do

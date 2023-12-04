@@ -24,4 +24,9 @@ defmodule Servy.BearController do
   def create(request, %{"name" => name, "type" => type}) do
     %{request | status: 201, resp_body: "Created a #{type} bear named #{name}"}
   end
+
+  def delete(request, %{"id" => id}) do
+    bear = Wildthings.get_bear(id)
+    %{ request | status: 403, resp_body: "Deleting bear: #{bear.name}"}
+  end
 end
