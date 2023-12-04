@@ -7,9 +7,10 @@ defmodule Servy.BearController do
   end
 
   def index(request) do
+    # all do the same thing
     bears = Wildthings.list_bears()
-    |> Enum.filter(fn (bear) -> Bear.is_grizzly(bear)  end)
-    |> Enum.sort(fn (a, b) -> a.name <= b.name  end)
+    |> Enum.filter(&Bear.is_grizzly/1)
+    |> Enum.sort(&Bear.order_asc_by_name(&1, &2))
     |> Enum.map(fn(bear) ->  bear_item(bear) end)
     |> Enum.join
     %{request | status: 200, resp_body: "<ul>#{bears}</ul>"}
