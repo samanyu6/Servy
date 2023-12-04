@@ -1,10 +1,16 @@
 defmodule Servy.BearController do
   alias Servy.Wildthings
+  alias Servy.Bear
+
+  defp bear_item(bear) do
+    "<li>#{bear.name} - #{bear.type}</li>"
+  end
+
   def index(request) do
     bears = Wildthings.list_bears()
-    |> Enum.filter(fn (bear) -> bear.type == "Grizzly"  end)
+    |> Enum.filter(fn (bear) -> Bear.is_grizzly(bear)  end)
     |> Enum.sort(fn (a, b) -> a.name <= b.name  end)
-    |> Enum.map(fn(bear) -> "<li>#{bear.name} - #{bear.type}</li>"  end)
+    |> Enum.map(fn(bear) ->  bear_item(bear) end)
     |> Enum.join
     %{request | status: 200, resp_body: "<ul>#{bears}</ul>"}
   end
@@ -14,11 +20,6 @@ defmodule Servy.BearController do
     %{request | status: 200, resp_body: "<h1>Bear #{bear.id}: #{bear.name}</h1>"}
   end
 
-  @spec create(%{:resp_body => any(), :status => any(), optional(any()) => any()}, map()) :: %{
-          :resp_body => <<_::64, _::_*8>>,
-          :status => 201,
-          optional(any()) => any()
-        }
   def create(request, %{"name" => name, "type" => type}) do
     %{request | status: 201, resp_body: "Created a #{type} bear named #{name}"}
   end

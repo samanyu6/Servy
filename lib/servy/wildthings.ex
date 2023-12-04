@@ -20,7 +20,6 @@ defmodule Servy.Wildthings do
     Enum.find(list_bears(), fn(bear) -> bear.id == id end)
   end
 
-  # strings are binary in elx
   def get_bear(id) when is_binary(id) do
     id |> String.to_integer |> get_bear
   end

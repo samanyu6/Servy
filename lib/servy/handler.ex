@@ -34,6 +34,12 @@ defmodule Servy.Handler do
     BearController.index(request)
   end
 
+  def route(%Conv{method: "GET", path: "/bears/new"} = request) do
+    get_page("form.html")
+    |> handle_file(request)
+  end
+
+
   def route(%Conv{method: "GET", path: "/bears/" <> id} = request) do
     params = Map.put(request.params, "id", id)
     BearController.show(request, params)
@@ -42,11 +48,6 @@ defmodule Servy.Handler do
   def route(%Conv{method: "GET", path: "/pages/" <> name} = request) do
     get_page("#{name}.html")
      |> handle_file(request)
-  end
-
-  def route(%Conv{method: "GET", path: "/bears/new"} = request) do
-    get_page("form.html")
-    |> handle_file(request)
   end
 
   def route(%Conv{method: "DELETE", path: "/bears" <> _id} = request) do
