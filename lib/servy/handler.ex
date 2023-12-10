@@ -35,6 +35,10 @@ defmodule Servy.Handler do
     BearController.index(request)
   end
 
+  def route(%Conv{method: "GET", path: "/api/bears"} = request) do
+    Servy.Api.BearController.index(request)
+  end
+
   def route(%Conv{method: "GET", path: "/bears/new"} = request) do
     get_page("form.html")
     |> handle_file(request)
@@ -67,10 +71,10 @@ defmodule Servy.Handler do
 
   def format_response(%Conv{resp_body: "🎉"} = request) do
     """
-    HTTP/1.1 #{Conv.full_status(request)}
-    Content-Type: text/html
-    Content-Length: #{byte_size(request.resp_body)}
-
+    HTTP/1.1 #{Conv.full_status(request)}\r
+    Content-Type: #{request.resp_content_type}\r
+    Content-Length: #{byte_size(request.resp_body)}\r
+    \r
     #{request.resp_body}
     """
   end
@@ -79,7 +83,7 @@ defmodule Servy.Handler do
     # TODO: Use values in the map to create an HTTP response string:
     """
     HTTP/1.1 #{Conv.full_status(request)}\r
-    Content-Type: text/html\r
+    Content-Type: #{request.resp_content_type}\r
     Content-Length: #{String.length(request.resp_body)}\r
     \r
     #{request.resp_body}
