@@ -7,6 +7,7 @@ defmodule Servy.Handler do
 
   alias Servy.BearController
   alias Servy.Conv
+
  @doc "servy handler func"
   def handle(request) do
     request
