@@ -33,5 +33,9 @@ defmodule Servy.Plugins do
     request
   end
 
-  def trace(%Conv{} = request), do: request
+  def trace(%Conv{} = request) do
+    if Mix.env == :dev do
+      IO.inspect request
+    end
+  end
 end
