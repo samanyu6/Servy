@@ -26,6 +26,17 @@ defmodule Servy.Handler do
 
   def emojify(%Conv{} = request), do: request
 
+  # route to bomb
+  def route(%Conv{method: "GET", path: "/kaboom"} = _request) do
+    raise "Kaboom"
+  end
+
+  def route(%Conv{ method: "GET", path: "/hibernate/" <> time} = request) do
+    time |> String.to_integer |> :timer.sleep
+
+    %{ request | status: 200, resp_body: "Awake"}
+  end
+
   def route(%Conv{method: "GET", path: "/wildthings"} = request) do
     # conv = Map.put(conv, :resp_body, "Bears)
     %{ request | status: 200, resp_body: "Bears, Lions, Tigers" }
