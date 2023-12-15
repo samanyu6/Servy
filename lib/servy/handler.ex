@@ -39,9 +39,15 @@ defmodule Servy.Handler do
   end
 
   def route(%Conv{ method: "GET", path: "/snapshots"} = req) do
-    snap1 = Video.get_snapshot("cam-1")
-    snap2 = Video.get_snapshot("cam-2")
-    snap3 = Video.get_snapshot("cam-3")
+    parent = self() #parent pid to send message to
+
+    spawn(fn -> send(parent, {:result, Video.get_snapshot("cam-1")}) end)
+    spawn(fn -> send(parent, {:result, Video.get_snapshot("cam-2")}) end)
+    spawn(fn -> send(parent, {:result, Video.get_snapshot("cam-3")}) end)
+    # receive msg && is a blocking call
+    snap1 = receive do {:result, filename} -> filename end
+    snap2 = receive do {:result, filename} -> filename end
+    snap3 = receive do {:result, filename} -> filename end
 
     snapshots = [snap1, snap2, snap3]
 
