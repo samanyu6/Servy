@@ -5,6 +5,7 @@ defmodule Servy.Handler do
   import Servy.FileHandler, only: [get_page: 1, handle_file: 2]
   import Servy.BearController
 
+  alias Servy.Video
   alias Servy.BearController
   alias Servy.Conv
 
@@ -35,6 +36,16 @@ defmodule Servy.Handler do
     time |> String.to_integer |> :timer.sleep
 
     %{ request | status: 200, resp_body: "Awake"}
+  end
+
+  def route(%Conv{ method: "GET", path: "/snapshots"} = req) do
+    snap1 = Video.get_snapshot("cam-1")
+    snap2 = Video.get_snapshot("cam-2")
+    snap3 = Video.get_snapshot("cam-3")
+
+    snapshots = [snap1, snap2, snap3]
+
+    %{ req | status: 200, resp_body: inspect snapshots}
   end
 
   def route(%Conv{method: "GET", path: "/wildthings"} = request) do
