@@ -1,7 +1,7 @@
 # Servy
-  - Atoms are not garbage collected oops
-  - URI.decode_string converts params automatically into a map how convenient
-  - Guard clauses for type check is neat
+  - Remember:
+  - Atoms are not garbage collected
+  - URI.decode_string converts params automatically into a map --> if ever needed
   - Strings are binary in elixir/ erlang
 ## Installation
 
